@@ -149,7 +149,7 @@ config = QWenConfig.from_pretrained("./qwen")
 model = QWenLMHeadModel(config)
 
 model_size = sum(t.numel() for t in model.parameters())
-print(f"Phi-2 size: {model_size / 1000**2:.1f}M parameters")
+print(f"QWen size: {model_size / 1000**2:.1f}M parameters")
 
 # %% [markdown]
 # # 6. cuda cache回调函数
