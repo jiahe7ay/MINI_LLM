@@ -237,8 +237,8 @@ print(f"Perplexity: {np.exp(eval_results['eval_loss']):.2f}")
 
 # %%
 
-loss_log = pd.DataFrame(trainer.state.log_history)
-loss_log.to_csv(f"./logs/pre_train_log_{time.strftime('%Y%m%d-%H%M')}.csv")
+#loss_log = pd.DataFrame(trainer.state.log_history)
+#loss_log.to_csv(f"./logs/pre_train_log_{time.strftime('%Y%m%d-%H%M')}.csv")
 
 
 trainer.save_model(pretrain_args.model_save_dir)
