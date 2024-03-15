@@ -126,15 +126,39 @@ def gen_baike(origin_file):
 				baike_items = []
 
 
-def gen_sky(origin_file, output_file):
-	lines=[]
-	with open(origin_file,'r',encoding='utf-8') as f:
-		for line in f:
-			item=ujson.loads(line)
-			lines.append(item['text']+'<|im_end|>')
-	chunk_data=split_txt_cropus_to_chunk_data(lines)
-	tb=pa.Table.from_arrays([pa.array(chunk_data)],names=['text'])
-	pq.write_table(table=tb, where=output_file, row_group_size=50000, data_page_size=50000, )
+# def gen_sky(origin_file, output_file):
+# 	lines=[]
+# 	with open(origin_file,'r',encoding='utf-8') as f:
+# 		for line in f:
+# 			item=ujson.loads(line)
+# 			lines.append(item['text']+'<|im_end|>')
+# 	chunk_data=split_txt_cropus_to_chunk_data(lines)
+# 	tb=pa.Table.from_arrays([pa.array(chunk_data)],names=['text'])
+# 	pq.write_table(table=tb, where=output_file, row_group_size=50000, data_page_size=50000, )
+
+def gen_sky(input_folder, output_folder):
+    os.makedirs(output_folder, exist_ok=True)
+    
+    for filename in os.listdir(input_folder):
+        if filename.endswith(".jsonl"):  # 修改为处理JSON Lines文件
+            origin_file = os.path.join(input_folder, filename)
+            output_file = os.path.join(output_folder, filename.replace('.jsonl', '.parquet'))
+            print(f"Processing {origin_file}...")
+
+            lines = []
+            with open(origin_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    item = ujson.loads(line)
+                    lines.append(item['text'] + '')  # 确保每行都是一个有效的JSON对象
+
+            if lines:  # 确保文件中有内容
+                chunk_data = split_txt_cropus_to_chunk_data(lines)
+                tb = pa.Table.from_arrays([pa.array(chunk_data)], names=['text'])
+                pq.write_table(table=tb, where=output_file, row_group_size=50000, data_page_size=50000)
+                print(f"Processed {origin_file} to {output_file}")
+            else:
+                print(f"No content in {origin_file}. Skipping.")
+
 
 def gen_wiki_filter(origin_file, output_file):
 	lines=[]
@@ -242,11 +266,19 @@ def gen_aplca_sft(origin_file,output_file):
 	#print(lines[0])
 	tb=pa.Table.from_pylist(lines)
 	pq.write_table(table=tb, where=output_file, row_group_size=20480, data_page_size=20480, )
+	
+
+#原本的gen_sky 需要复制多个，没办法读取一个文件夹. 新的gen_sky只需要输入文件夹和输出文件夹的路径即可。并且原本的也会自动修改为.parquet结尾.（喵德注释）
+#gen_sky_for_folder("/home/miaode/MINI_LLM/data/SkyPile-150B/data_folder","/home/miaode/MINI_LLM/datasets" )
+
+#这个在readme 没有说清楚是要下载哪一个记得是self_cognition.json 。（喵德注释)
+# https://github.com/hiyouga/ChatGLM-Efficient-Tuning/blob/main/data/self_cognition.json
 #gen_aplca_sft("../../../datasets/self_cognition.json","../datasets/aplca3.parquet")
+
 gen_bell_sft("../../../datasets/train_2M_CN.json","../datasets/bell3.parquet")
-#gen_sky("../../../datasets/sky/2020-40_zh_middle_0002.jsonl","../datasets/sky20.parquet")
 #gen_bell()
+
+#这里的563w_baidubaike要记得解压. 原本download的是7z压缩文件》
 #gen_baike('../datasets/563w_baidubaike.json')
-#gen_sky("../datasets/2020-40_zh_head_0000.jsonl","../datasets/sky1.parquet")
 #gen_mbvc("../datasets/oscar_202201.part_0000.jsonl","../datasets/mbvc1.parquet")
 
