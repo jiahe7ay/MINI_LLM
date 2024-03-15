@@ -27,7 +27,7 @@ Created by Lil2J
 #    将所有数据tokenize之后，token数量大概为8b
 # 2. 将下载好的数据放到你想要的目录下
 # 3. 切换到dataset_utils目录下运行generate_data.py,运行前修改py文件，将处理数据的函数的注释去掉，才能运行起来
-# 4. 运行data_process.py，在./datasets/目录下生成parquet文件
+# 4. 运行generate_data.py.py，在./datasets/目录下生成parquet文件
 cd dataset_utils
 python3 generate_data.py
 #5. 修改train.sh 文件 如果是单卡运行的话  把--multi_gpu 去掉，然后--config_file 后面接accelerate_one_gpu.yaml  如果是多卡的话，就把 accelerate_multi_gpu.yaml中 num_processes: 4
