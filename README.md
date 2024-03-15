@@ -80,8 +80,8 @@ LLM微调的目的是将预训练模型中的知识引导出来的一种手段�
 
    | SFT语料                                                                       | 描述                                                                  |
    |-----------------------------------------------------------------------------|---------------------------------------------------------------------|
-   | alpaca-zh：[alpaca-zh](https://github.com/hiyouga/ChatGLM-Efficient-Tuning/tree/main/data) | 该数据集是参考Alpaca方法基于GPT4得到的self-instruct数据，约5万条。 |
-   | bell：[bell](https://huggingface.co/datasets/BelleGroup/)         | 源自BelleGroup的一部分SFT数据。包含约300万条由BELLE项目生成的中文指令数据。|
+   | alpaca-zh：[alpaca-zh]([https://github.com/hiyouga/ChatGLM-Efficient-Tuning/tree/main/data](https://github.com/hiyouga/ChatGLM-Efficient-Tuning/blob/main/data/self_cognition.json)) | 该数据集是参考Alpaca方法基于GPT4得到的self-instruct数据，约5万条。 |
+   | bell：[bell]([https://huggingface.co/datasets/BelleGroup/](https://huggingface.co/datasets/BelleGroup/train_3.5M_CN))         | 源自BelleGroup的一部分SFT数据。包含约300万条由BELLE项目生成的中文指令数据。|
 
   
 
