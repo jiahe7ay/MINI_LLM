@@ -65,7 +65,4 @@ class QWenConfig(PretrainedConfig):
         self.use_cache_quantization = use_cache_quantization
         self.use_cache_kernel = use_cache_kernel
         self.softmax_in_fp32 = softmax_in_fp32
-        super().__init__(
-            tie_word_embeddings=tie_word_embeddings,
-            **kwargs
-        )
+        super().__init__(tie_word_embeddings=tie_word_embeddings, **kwargs)
