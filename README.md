@@ -101,16 +101,16 @@ sft模型权重：https://huggingface.co/Lil2J/mini_llm_sft/tree/main
 1. **预训练模型**
 
 我首先先跑了Wiki中文百科 + BaiduBaiKe 
-![wiki+baidu.png](wiki+baidu.png)
+![wiki+baidu.png](assets/wiki+baidu.png)
 预训练语料： Wiki中文百科 + BaiduBaiKe 
 
 然后再跑天工的数据
-![sky.png](sky.png)
+![sky.png](assets/sky.png)
 预训练语料： 天工数据集前20个文件
 
 2. **sft模型**
 
-![sft.png](sft.png)
+![sft.png](assets/sft.png)
 微调语料： aplca数据+bell:train_2M_CN,train_1M_CN和train_0.5M_CN
 
 3. **sft模型效果**
@@ -120,15 +120,15 @@ sft模型权重：https://huggingface.co/Lil2J/mini_llm_sft/tree/main
 python3 test.py
 ```
 
-![wiki+baidu.png](4.png)
-![wiki+baidu.png](1.png)
-![wiki+baidu.png](2.png)
-![wiki+baidu.png](3.png)
-![wiki+baidu.png](5.png)
-![wiki+baidu.png](6.png)
-![wiki+baidu.png](7.png)
-![wiki+baidu.png](8.png)
-![wiki+baidu.png](10.png)
+![wiki+baidu.png](assets/4.png)
+![wiki+baidu.png](assets/1.png)
+![wiki+baidu.png](assets/2.png)
+![wiki+baidu.png](assets/3.png)
+![wiki+baidu.png](assets/5.png)
+![wiki+baidu.png](assets/6.png)
+![wiki+baidu.png](assets/7.png)
+![wiki+baidu.png](assets/8.png)
+![wiki+baidu.png](assets/10.png)
 
 
 
