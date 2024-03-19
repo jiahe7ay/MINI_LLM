@@ -1,3 +1,4 @@
+import os
 from unicodedata import normalize
 
 import numpy as np
@@ -184,7 +185,7 @@ def gen_sky(input_folder, output_folder):
                 print(f"No content in {origin_file}. Skipping.")
 
 
-def gen_wiki_filter(origin_file, output_file):
+def gen_wiki_filter(origin_file, output_file="../datasets/wiki_fi.parquet"):
     lines = []
     with open(origin_file, "r", encoding="utf-8") as f:
         items = ujson.load(f)
@@ -224,8 +225,8 @@ def gen_bell():
     eval_data = []
     eval_size = 10000
     max_len = 512
-    root = ".."
-    with open(root + "/datasets/train_3.5M_CN.json", "r", encoding="utf-8") as f:
+    root = "/data/MINI_LLM_data"
+    with open(root + "/train_3.5M_CN/train_3.5M_CN.json", "r", encoding="utf-8") as f:
         for line in f:
             item = ujson.loads(line)
 
@@ -253,8 +254,8 @@ def gen_bell():
                 continue
             train_data.append(txt)
     for file in [
-        root + "/datasets/train_2M_CN.json",
-        root + "/datasets/Belle_open_source_1M.json",
+        root + "/train_2M_CN/train_2M_CN.json",
+        root + "/train_1M_CN/Belle_open_source_1M.json",
     ]:
         with open(file, "r", encoding="utf-8") as f:
             for line in f:
@@ -337,6 +338,15 @@ def gen_aplca_sft(origin_file, output_file):
     )
 
 
+# Pretrain using WIKI and baidu baike
+gen_wiki_filter(
+    "/data/MINI_LLM_data/wikipedia-cn-20230720-filtered/wikipedia-cn-20230720-filtered.json"
+)
+# 这里的563w_baidubaike要记得解压. 原本download的是7z压缩文件》
+gen_baike("/data/MINI_LLM_data/563w_baidubaike.json")
+gen_bell()  # To generate the eval dataset
+
+
 # 原本的gen_sky 需要复制多个，没办法读取一个文件夹. 新的gen_sky只需要输入文件夹和输出文件夹的路径即可。并且原本的也会自动修改为.parquet结尾.（喵德注释）
 # gen_sky_for_folder("/home/miaode/MINI_LLM/data/SkyPile-150B/data_folder","/home/miaode/MINI_LLM/datasets" )
 
@@ -344,9 +354,6 @@ def gen_aplca_sft(origin_file, output_file):
 # https://github.com/hiyouga/ChatGLM-Efficient-Tuning/blob/main/data/self_cognition.json
 # gen_aplca_sft("../../../datasets/self_cognition.json","../datasets/aplca3.parquet")
 
-gen_bell_sft("../../../datasets/train_2M_CN.json", "../datasets/bell3.parquet")
-# gen_bell()
+# gen_bell_sft("../../../datasets/train_2M_CN.json", "../datasets/bell3.parquet")
 
-# 这里的563w_baidubaike要记得解压. 原本download的是7z压缩文件》
-# gen_baike('../datasets/563w_baidubaike.json')
 # gen_mbvc("../datasets/oscar_202201.part_0000.jsonl","../datasets/mbvc1.parquet")
