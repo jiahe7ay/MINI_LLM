@@ -5,13 +5,12 @@
 
 """Generation support."""
 
-from typing import Tuple, List, Union, Iterable
+from typing import Iterable, List, Tuple, Union
 
 import numpy as np
 import torch
 import torch.nn.functional as F
-from transformers import PreTrainedTokenizer
-from transformers import logging
+from transformers import PreTrainedTokenizer, logging
 from transformers.generation import LogitsProcessor
 
 logger = logging.get_logger(__name__)
@@ -198,7 +197,7 @@ def _decode_default(
     raw_text_len: int,
     verbose: bool = False,
     return_end_reason: bool = False,
-    errors: str='replace',
+    errors: str = "replace",
 ):
     trim_decode_tokens = tokenizer.decode(tokens, errors=errors)[raw_text_len:]
     if verbose:
@@ -232,7 +231,7 @@ def _decode_chatml(
     context_length: int,
     verbose: bool = False,
     return_end_reason: bool = False,
-    errors: str='replace'
+    errors: str = "replace",
 ):
     end_reason = f"Gen length {len(tokens)}"
     eod_token_idx = context_length
@@ -241,9 +240,14 @@ def _decode_chatml(
             end_reason = f"Gen {tokenizer.decode([tokens[eod_token_idx]])!r}"
             break
 
-    trim_decode_tokens = tokenizer.decode(tokens[:eod_token_idx], errors=errors)[raw_text_len:]
+    trim_decode_tokens = tokenizer.decode(tokens[:eod_token_idx], errors=errors)[
+        raw_text_len:
+    ]
     if verbose:
-        print("\nRaw Generate w/o EOD:", tokenizer.decode(tokens, errors=errors)[raw_text_len:])
+        print(
+            "\nRaw Generate w/o EOD:",
+            tokenizer.decode(tokens, errors=errors)[raw_text_len:],
+        )
         print("\nRaw Generate:", trim_decode_tokens)
         print("\nEnd Reason:", end_reason)
     for stop_word in stop_words:
@@ -266,7 +270,7 @@ def decode_tokens(
     chat_format: str,
     verbose: bool = False,
     return_end_reason: bool = False,
-    errors: str="replace",
+    errors: str = "replace",
 ) -> str:
     if torch.is_tensor(tokens):
         tokens = tokens.cpu().numpy().tolist()

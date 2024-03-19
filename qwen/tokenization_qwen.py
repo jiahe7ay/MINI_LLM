@@ -12,7 +12,7 @@ import unicodedata
 from typing import Collection, Dict, List, Set, Tuple, Union
 
 import tiktoken
-from transformers import PreTrainedTokenizer, AddedToken
+from transformers import AddedToken, PreTrainedTokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -70,24 +70,25 @@ class QWenTokenizer(PreTrainedTokenizer):
 
         # how to handle errors in decoding UTF-8 byte sequences
         # use ignore if you are in streaming inference
-        self.errors = errors  
+        self.errors = errors
 
         self.mergeable_ranks = _load_tiktoken_bpe(vocab_file)  # type: Dict[bytes, int]
-        self.special_tokens = {
-            token: index
-            for index, token in SPECIAL_TOKENS
-        }
+        self.special_tokens = {token: index for index, token in SPECIAL_TOKENS}
 
         # try load extra vocab from file
         if extra_vocab_file is not None:
-            used_ids = set(self.mergeable_ranks.values()) | set(self.special_tokens.values())
+            used_ids = set(self.mergeable_ranks.values()) | set(
+                self.special_tokens.values()
+            )
             extra_mergeable_ranks = _load_tiktoken_bpe(extra_vocab_file)
             for token, index in extra_mergeable_ranks.items():
                 if token in self.mergeable_ranks:
                     logger.info(f"extra token {token} exists, skipping")
                     continue
                 if index in used_ids:
-                    logger.info(f'the index {index} for extra token {token} exists, skipping')
+                    logger.info(
+                        f"the index {index} for extra token {token} exists, skipping"
+                    )
                     continue
                 self.mergeable_ranks[token] = index
             # the index may be sparse after this, but don't worry tiktoken.Encoding will handle this
