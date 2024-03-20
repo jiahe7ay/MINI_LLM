@@ -169,7 +169,7 @@ def gen_sky(input_folder, output_folder):
             with open(origin_file, "r", encoding="utf-8") as f:
                 for line in f:
                     item = ujson.loads(line)
-                    lines.append(item["text"] + "")  # 确保每行都是一个有效的JSON对象
+                    lines.append(item["text"] + "<|im_end|>")  # 确保每行都是一个有效的JSON对象
 
             if lines:  # 确保文件中有内容
                 chunk_data = split_txt_cropus_to_chunk_data(lines)
