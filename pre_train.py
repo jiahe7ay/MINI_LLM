@@ -102,7 +102,7 @@ tokenizer.pad_token_id = tokenizer.im_end_id
 vocab_size = len(tokenizer)
 if vocab_size % 64 != 0:
     vocab_size = (vocab_size // 64 + 1) * 64
-print(f"final vocab sieze: {vocab_size}")
+print(f"final vocab size: {vocab_size}")
 
 # %% [markdown]
 # ## token to id缓存到文件，使用的时候不用再次tokenize
