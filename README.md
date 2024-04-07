@@ -36,6 +36,16 @@ python3 generate_data.py
 #开启预训练
 sh train.sh pre_train.py
 
+# 多机多卡训练
+# 使用文件 accelerate_multi_gpus_on_multi_nodes.yaml， 其中：
+# 采用了deepspeed standard任务提交模式，num_machines为节点数量，num_processes为全部可用GPUs的数量
+# 使用多机多卡训练时需要保证以下几个步骤：
+#1. 多节点免密登录，且节点登录用户名一致，同时将节点的访问用户名写入各节点host文件
+#2. 多节点环境一致，主要是cuda版本，nccl版本，pytorch版本等，三者之间的版本也有相对应的依赖关系。
+#3. 各节点运行命令行，accelerate launch --config_file accelerate_multi_gpus_on_multi_nodes.yaml --machine_rank {rank} --main_process_ip {MasterIP} --main_process_port {MasterPort} pre_train.py
+#   其中，rank为用户自定义的机器排序，主节点为0，MasterIP为主节点IP，MasterPort为主节点Port，在提交命令行时，各节点命令行仅需要修改rank。
+accelerate launch --config_file accelerate_multi_gpus_on_multi_nodes.yaml --machine_rank {rank} --main_process_ip {MasterIP} --main_process_port {MasterPort} pre_train.py 
+  
 #6.预训练完之后，修改sft.py中的模型权重加载路径
 #开启sft微调
 sh train.sh sft.py
