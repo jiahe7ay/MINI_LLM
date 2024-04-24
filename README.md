@@ -155,6 +155,12 @@ class DpoConfig:
     ...
 ```
 - 第二步，执行dpo_train
+- 
+### 模型对比
+因需要配合sft模型才能看差别，因为其本质是让sft的模型更好的对齐你的目标数据而已，min(Π，Π*);可以在下面的链接中下载对应dpo数据，和待优化的sft模型，链接如下：
+链接：https://pan.baidu.com/s/1GYeR6qrUhjsmpgh8-ABDpQ 
+提取码：dba9 
+
 
 
 
