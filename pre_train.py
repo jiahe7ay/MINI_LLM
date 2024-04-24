@@ -116,9 +116,10 @@ def token_to_id(samples: dict) -> dict:
     batch_txt = samples["text"]
     outputs = tokenizer(
         batch_txt,
-        truncation=False,
         padding=False,
         return_attention_mask=False,
+        truncation=True,
+        max_length=pretrain_args.max_seq_len
     )
 
     input_ids = [np.array(item, dtype=map_dtype) for item in outputs["input_ids"]]
