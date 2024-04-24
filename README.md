@@ -9,14 +9,16 @@ Created by Lil2J
 
 2.https://github.com/DLLXW/baby-llama2-chinese
 
-包含：预训练、SFT指令微调、**奖励模型以及强化学习**（待做）完整流程。
+3.https://github.com/charent/ChatLM-mini-Chinese
+
+包含：预训练、SFT指令微调、DPO、**PPO**（待做）完整流程。
 
 希望分享给大家，也希望大家一起来完善！
 
 
 ## 📚项目简介
 - 训练一个参数量1.4b预训练模型，基座模型选的是QWEN,训练的token数量为8b左右
-- 构建包含预训练、SFT指令微调整个完整流程的LLM代码仓库，包含DeepSpeed分布式训练技术
+- 构建包含预训练、SFT指令微调、DPO整个完整流程的LLM代码仓库，包含DeepSpeed分布式训练技术
 
 ## 🌟Quick Start
 ```bash
@@ -98,6 +100,62 @@ LLM微调的目的是将预训练模型中的知识引导出来的一种手段�
 ### SFT样本构建
 因为SFT语料一般较小，我们没必要提前分词，而是在构建Dataloader的时候进行分词构建batch送给模型。所以自行参考sft.py即可！
 
+## 🤖DPO阶段
+DPO算法称为直接偏好优化（Direct Preference Optimization)，DPO的代码参考了[**中文对话0.2B小模型 ChatLM-Chinese-0.2B**]([https://github.com/HqWu-HITCS/Awesome-Chinese-LLM])
+### 数据集构建思路
+**整个构建分为四步：**
+- 第一步，针对sft阶段不太合适的指令，构建待优化的指令数据集（也可以直接是上面提到的SFT语料数据集alpaca和bell），数据结构如下：
+```data
+  {
+    "instruction": "描述原子的结构。",
+    "input": "",
+    "output": "原子是物质的基本单位，它由三种基本粒子组成：质子、中子和电子。质子和中子形成原子核，位于原子中心，核外的电子围绕着原子核运动。\n\n原子结构具有层次性。原子核中，质子带正电，中子不带电（中性）。原子核非常小且致密，占据了原子总质量的绝大部分。电子带负电，通常围绕核运动，形成若干层次，称为壳层或电子层。电子数量与质子数量相等，使原子呈电中性。\n\n电子在每个壳层中都呈规律分布，并且不同壳层所能容纳的电子数也不同。在最里面的壳层一般只能容纳2个电子，其次一层最多可容纳8个电子，再往外的壳层可容纳的电子数逐层递增。\n\n原子核主要受到两种相互作用力的影响：强力和电磁力。强力的作用范围非常小，主要限制在原子核内，具有极强的吸引作用，使核子（质子和中子）紧密结合在一起。电磁力的作用范围较大，主要通过核外的电子与原子核相互作用，发挥作用。\n\n这就是原子的基本结构。原子内部结构复杂多样，不同元素的原子核中质子、中子数量不同，核外电子排布分布也不同，形成了丰富多彩的化学世界。"
+  }
+```
+- 第二步，合并输入部分，生成目标数据集chosen，数据结构如下：
+```data
+    {
+        "prompt": "描述原子的结构。",
+        "chosen": "原子是物质的基本单位，它由三种基本粒子组成：质子、中子和电子。质子和中子形成原子核，位于原子中心，核外的电子围绕着原子核运动。\n\n原子结构具有层次性。原子核中，质子带正电，中子不带电（中性）。原子核非常小且致密，占据了原子总质量的绝大部分。电子带负电，通常围绕核运动，形成若干层次，称为壳层或电子层。电子数量与质子数量相等，使原子呈电中性。\n\n电子在每个壳层中都呈规律分布，并且不同壳层所能容纳的电子数也不同。在最里面的壳层一般只能容纳2个电子，其次一层最多可容纳8个电子，再往外的壳层可容纳的电子数逐层递增。\n\n原子核主要受到两种相互作用力的影响：强力和电磁力。强力的作用范围非常小，主要限制在原子核内，具有极强的吸引作用，使核子（质子和中子）紧密结合在一起。电磁力的作用范围较大，主要通过核外的电子与原子核相互作用，发挥作用。\n\n这就是原子的基本结构。原子内部结构复杂多样，不同元素的原子核中质子、中子数量不同，核外电子排布分布也不同，形成了丰富多彩的化学世界。"
+    },
+```
+- 第三步，通过第二步的SFT模型，输入prompt，如这里的“描述原子结构。”，得到结果“一个原子由质子、中子和电子组成，它们以特定的方式排列成一个原子核。”，从而构建rejected数据集，数据结构如下：
+```data
+{
+    'prompt': '描述原子的结构。', 
+   'reject': '一个原子由质子、中子和电子组成，它们以特定的方式排列成一个原子核。'
+}
+```
+- 第四步，合并第二步和第三步的输入结果，数据结构如下：
+```data
+  {
+        "prompt": "描述原子的结构。",
+        "chosen": "原子是物质的基本单位，它由三种基本粒子组成：质子、中子和电子。质子和中子形成原子核，位于原子中心，核外的电子围绕着原子核运动。\n\n原子结构具有层次性。原子核中，质子带正电，中子不带电（中性）。原子核非常小且致密，占据了原子总质量的绝大部分。电子带负电，通常围绕核运动，形成若干层次，称为壳层或电子层。电子数量与质子数量相等，使原子呈电中性。\n\n电子在每个壳层中都呈规律分布，并且不同壳层所能容纳的电子数也不同。在最里面的壳层一般只能容纳2个电子，其次一层最多可容纳8个电子，再往外的壳层可容纳的电子数逐层递增。\n\n原子核主要受到两种相互作用力的影响：强力和电磁力。强力的作用范围非常小，主要限制在原子核内，具有极强的吸引作用，使核子（质子和中子）紧密结合在一起。电磁力的作用范围较大，主要通过核外的电子与原子核相互作用，发挥作用。\n\n这就是原子的基本结构。原子内部结构复杂多样，不同元素的原子核中质子、中子数量不同，核外电子排布分布也不同，形成了丰富多彩的化学世界。",
+        "reject": "一个原子由质子、中子和电子组成，它们以特定的方式排列成一个原子核。"
+    },
+```
+
+### DPO训练
+- 第一步，使用dpo_train文件，修改其中的DpoConfig类,设置好对应的SFT路径和训练数据集路径即可
+```python
+class DpoConfig:
+    max_seq_len: int = 1024 + 8                  # 8 for eos token
+    sft_model_file: str = '/MINI_LLM/model_save/checkpoint_sftmodel' # SFT后的模型路径
+    tokenizer_dir: str = '/MINI_LLM/model_save/checkpoint_sftmodel'   # tokenizer一般和model权重放在同一个文件夹
+
+    dpo_train_file: str = r'/MINILLM\MINI_LLM/datasets/my_dpo_train.json' # dpo的训练集
+    dpo_eval_file: str = r'/MINILLM\MINI_LLM/datasets/my_dpo_eval.json' # dpo的测试集
+
+    adapter_file: str = '/MINILLM\MINI_LLM//dpo/adapter_model.safetensors'
+    log_dir: str = '/MINILLM\MINI_LLM/logs'
+
+    ...
+
+    output_dir: str = '/MINILLM\MINI_LLM//dpo'  # dpo模型输出路径
+    ...
+```
+- 第二步，执行dpo_train
+
 
 
 ## 🥇模型权重以及评测
@@ -107,6 +165,8 @@ LLM微调的目的是将预训练模型中的知识引导出来的一种手段�
 预训练权重：https://huggingface.co/Lil2J/mini_llm/tree/main
 
 sft模型权重：https://huggingface.co/Lil2J/mini_llm_sft/tree/main
+
+dpo模型权重：https://huggingface.co/wtxfrancise/mini_llm_dpo/tree/main
 
 1. **预训练模型**
 
@@ -140,8 +200,14 @@ python3 test.py
 ![wiki+baidu.png](assets/8.png)
 ![wiki+baidu.png](assets/10.png)
 
-
-
+4.  **dpo模型**
+![wiki+baidu.png](assets/11.png)
+dpo语料： alpaca数据+bell:train_1M_CN
+5.  **dpo模型效果**
+![wiki+baidu.png](assets/12.png)
+![wiki+baidu.png](assets/13.png)
+![wiki+baidu.png](assets/14.png)
+![wiki+baidu.png](assets/15.png)
 ## 其他
 有什么问题和想一起搞大模型的可以加wx:ForeverM1LAn 进行交流
 
