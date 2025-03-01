@@ -18,6 +18,7 @@ from transformers import (
 from transformers.trainer_callback import TrainerControl, TrainerState
 
 from datasets import Dataset, load_dataset
+from swanlab.integration.transformers import SwanLabCallback
 from qwen.configuration_qwen import QWenConfig
 from qwen.modeling_qwen import QWenLMHeadModel
 from qwen.tokenization_qwen import QWenTokenizer
@@ -214,9 +215,10 @@ class MyTrainerCallback(TrainerCallback):
         control.should_save = True
         return control
 
-
+# 实例化训练callback
 my_trainer_callback = MyTrainerCallback()
-
+# 设置SwanLab训练跟踪工具
+swanlab_callback = SwanLabCallback(project="MINI_LLM-Pretrain",mode="cloud")    # 如果想使用本地模式，可以指定mode="local"
 # %% [markdown]
 # # 6. 定义训练参数
 
@@ -254,7 +256,7 @@ trainer = Trainer(
     data_collator=data_collator,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
-    callbacks=[my_trainer_callback],
+    callbacks=[my_trainer_callback, swanlab_callback],
 )
 
 # %% [markdown]

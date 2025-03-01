@@ -9,6 +9,7 @@ from datasets import Dataset, load_dataset
 from transformers import  TrainingArguments,DataCollatorForLanguageModeling
 from trl import DPOTrainer
 from peft import LoraConfig, TaskType, PeftModel
+from swanlab.integration.transformers import SwanLabCallback
 
 from qwen.modeling_qwen import QWenLMHeadModel
 from qwen.tokenization_qwen import QWenTokenizer
@@ -116,8 +117,9 @@ def train_dpo(config: DpoConfig, peft_config: LoraConfig=None) -> None:
         seed=config.seed,
         logging_dir=config.log_dir,
     )
-
+    swanlab_callback = SwanLabCallback(project="MINI_LLM-DPO",mode="cloud") # 添加训练跟踪callback
     # 7. 初始化 DPO trainer
+    
     dpo_trainer = DPOTrainer(
         model_train,
         model_ref,
@@ -132,7 +134,8 @@ def train_dpo(config: DpoConfig, peft_config: LoraConfig=None) -> None:
         max_prompt_length=config.max_seq_len,
         generate_during_eval=True,
         is_encoder_decoder=True,
-        # data_collator=data_collator
+        # data_collator=data_collator,
+        callbacks=[swanlab_callback]
     )
 
     # 8. 训练
