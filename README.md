@@ -155,14 +155,26 @@ class DpoConfig:
     ...
 ```
 - 第二步，执行dpo_train
+
+### 开启训练看板
+
+可以通过SwanLab方便的查看训练日志变化，使用如下命令开启本地看板
+
+```bash
+swanlab watch
+```
+
 - 
 ### 模型对比
 因需要配合sft模型才能看差别，因为其本质是让sft的模型更好的对齐你的目标数据而已，min(Π，Π*);可以在下面的链接中下载对应dpo数据，和待优化的sft模型，链接如下：
 链接：https://pan.baidu.com/s/1GYeR6qrUhjsmpgh8-ABDpQ 
 提取码：dba9 
 
+<details style="color:rgb(128,128,128)">
 
+如果希望将训练过程保存在云端上查看，可以在callback调用处将`swanlab_callback = SwanLabCallback(...,mode="local")`的`mode`变量设置为`"cloud"`即可。
 
+</details>
 
 ## 🥇模型权重以及评测
 

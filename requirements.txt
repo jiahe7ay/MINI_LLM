@@ -6,3 +6,4 @@ einops==0.7.0
 flash-attn==2.5.5
 tiktoken
 einops
+swanlab==0.4.9
