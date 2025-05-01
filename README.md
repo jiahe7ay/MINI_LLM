@@ -227,7 +227,7 @@ dpo语料： alpaca数据+bell:train_1M_CN
 ![wiki+baidu.png](assets/14.png)
 ![wiki+baidu.png](assets/15.png)
 ## 其他
-有什么问题和想一起搞大模型的可以加wx:ForeverM1LAn 进行交流
+有什么问题和想一起搞大模型的可以加wx: Lil_2j 进行交流
 
 
 
